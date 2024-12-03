@@ -1,5 +1,3 @@
-USE benefitsdb;
-
 DECLARE @Rating INT = 10; -- Initialize the disability rating
 DECLARE @StateName NVARCHAR(MAX); -- Variable to hold the state name
 DECLARE @FilePath NVARCHAR(MAX); -- Variable to hold the file path
@@ -24,7 +22,7 @@ BEGIN
     WHILE @Rating <= 100
     BEGIN
         -- Construct the file path dynamically based on the state and disability rating
-        SET @FilePath = '.\States\' + @StateName + '\' + CAST(@Rating AS NVARCHAR) + '\' + CAST(@Rating AS NVARCHAR) + '.txt';
+        SET @FilePath = 'C:\Dev\dev\School\CS3300\VA-Benefits-Tool\States\' + @StateName + '\' + CAST(@Rating AS NVARCHAR) + '\' + CAST(@Rating AS NVARCHAR) + '.txt';
 
         -- Construct the column name dynamically
         SET @ColumnName = 'DR_' + CAST(@Rating AS NVARCHAR);
