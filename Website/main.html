@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VA Benefits Finder</title>
     <style>
         body {
@@ -36,13 +37,23 @@
             align-items: center;
         }
 
-        select, input {
+        select, button {
             width: 90%;
             max-width: 300px;
-            padding: 8px;
+            padding: 10px;
             margin-top: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
+        }
+
+        select {
+            background-color: #ffffff;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #007bff;
+            outline: none;
         }
 
         label {
@@ -56,7 +67,10 @@
         .error {
             color: red;
             font-size: 0.9rem;
-            margin-top: 10px;
+            margin-top: 5px;
+            text-align: left;
+            width: 90%;
+            max-width: 300px;
         }
 
         .button-container {
@@ -68,29 +82,37 @@
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px;
             font-size: 1rem;
             color: white;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease, transform 0.1s ease;
         }
 
-            button:hover {
-                background-color: #0056b3;
-            }
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
 
         .print-button {
             background-color: #28a745;
         }
 
-            .print-button:hover {
-                background-color: #1c7a2c;
-            }
+        .print-button:hover {
+            background-color: #1c7a2c;
+        }
 
-        /* Added styles for the output div */
         #output {
             margin-top: 20px;
             font-size: 1rem;
@@ -102,10 +124,10 @@
 <body>
     <div class="container">
         <h2>VA Benefits Finder</h2>
-        <form onsubmit="return validateForm();">
+        <form id="benefits-form">
             <label for="state">Choose your state:</label>
             <select id="state">
-                <option value="None">None</option>
+                <option value="None">Select a state</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -158,9 +180,11 @@
                 <option value="WY">Wyoming</option>
             </select>
 
+            <div id="state-error" class="error"></div>
+
             <label for="disability-rating">Select disability rating:</label>
             <select id="disability-rating">
-                <option value="None">None</option>
+                <option value="None">Select a disability rating</option>
                 <option value="10">10%</option>
                 <option value="20">20%</option>
                 <option value="30">30%</option>
@@ -173,14 +197,13 @@
                 <option value="100">100%</option>
             </select>
 
-            <div id="error-message" class="error"></div>
-            <br>
+            <div id="rating-error" class="error"></div>
+
             <div class="button-container">
-                <button type="submit">Submit</button>
+                <button type="submit" id="submit-button">Submit</button>
                 <button type="button" class="print-button" onclick="window.print()">Print</button>
             </div>
         </form>
-        <!-- Add the output div below the form -->
         <div id="output"></div>
     </div>
     <script src="websiteScript.js"></script>
