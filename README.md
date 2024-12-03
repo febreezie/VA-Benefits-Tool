@@ -42,65 +42,18 @@ The **VA-Benefits-Tool** is a platform designed to simplify the process of deter
    git clone https://github.com/febreezie/VA-Benefits-Tool
    cd VA-Benefits-Tool
 
-2. **Required Python Libraries**
+2. **To Run/Ensure the WebScrapper is functional**
    Install the following libraries:
    ```bash
    pip install requests beautifulsoup4
-
-3. **Run the Database**
-
-  
-   Install SQL Server 2022
-      Follow the link for installation:
-      https://go.microsoft.com/fwlink/p/?linkid=2215158&clcid=0x409&culture=en-us&country=us 
-
-      After the "Installation has completed successfully!"
-      Hit Close
-
-
-   Install Microsoft SQL on VSCode
-
-   Run either display.sql or updatedb.sql 
-
-   Click on create connection profile at the top seach bar
-
-   When asked for server name input the following:
-
-   ```bash
-   localhost
    ```
+   Note: The Webscrapper is set for a specific website currently.
 
-   Skip Database name by pressing Enter.
+3. **Run the html file to view the website**
+	Right click on the main.html in the Solution Explorer.
+	Select "Copy Path".
+	Paste the path into the search bar of your web browser of choice.
 
-   When prompted for Authentication Type input the following:
-   
-  ```bash
-
-   Select Integrated
-
-   ```
-
-   For profile name enter:
-
-   ```bash
-
-   benefitsdb
-
-   ```
-   Click on createtable.sql
-   Run createtable.sql
-
-   Click on updatedb.sql
-       On line 27 enter in your local path to the States Directory
-       ```bash
-       
-       Windows: 
-       C:\Path\To\File\VA-Benefits-Tool\States\
-
-       Mac: 
-       
-
-       ```
 
 
 
@@ -121,10 +74,4 @@ The **VA-Benefits-Tool** is a platform designed to simplify the process of deter
 
 
 
-4. **Run the HTML file locally**
-  Install the Live Server Extension (VS Code) by Ritwick Dey
 
-  Right-click the main.html and select "Open with Live Server"
-
-  
-3. 
