@@ -9,11 +9,11 @@ const app = express();
 
 // Database configuration (No username/password for local development)
 const dbConfig = {
-    server: "localhost", // Use your local database server
-    database: "benefitsdb", // Replace with your database name
+    server: "localhost",
+    database: "benefitsdb",
     options: {
-        encrypt: false, // No encryption needed for local dev
-        trustServerCertificate: true, // For self-signed certificates
+        encrypt: false,
+        trustServerCertificate: true,
     },
 };
 
@@ -21,30 +21,33 @@ const dbConfig = {
 app.get("/api/getBenefits", async (req, res) => {
     const { state, rating } = req.query;
 
+    // Validate query parameters
     if (!state || !rating) {
         return res.status(400).json({ error: "State and rating are required." });
     }
 
     try {
-        // Read the SQL file
-        const queryTemplate = fs.readFileSync(path.join(__dirname, "../database/website_handle.sql"), "utf-8");
+        // Read the SQL query template
+        const queryTemplate = fs.readFileSync(
+            path.join(__dirname, "../database/website_handle.sql"),
+            "utf-8"
+        );
 
-        // Replace placeholders in SQL file
+        // Safely replace placeholders in the SQL query
         const query = queryTemplate
-            .replace(/@state/g, `'${state}'`) // Replace @state with the state value
-            .replace(/@rating/g, `${rating}`); // Replace @rating with the rating value
+            .replace(/@state/g, `'${state.replace(/'/g, "''")}'`)
+            .replace(/@rating/g, `${parseInt(rating, 10)}`);
 
-        // Connect to the database
+        // Connect to the database and execute the query
         const pool = await sql.connect(dbConfig);
-
-        // Execute the query
         const result = await pool.request().query(query);
 
+        // Handle no results case
         if (result.recordset.length === 0) {
             return res.json({ benefits: "No data available for the selected state and rating." });
         }
 
-        // Send the result to the frontend
+        // Return the results
         res.json(result.recordset[0]);
     } catch (error) {
         console.error("Database query failed:", error);
@@ -52,7 +55,7 @@ app.get("/api/getBenefits", async (req, res) => {
     }
 });
 
-// Serve the frontend
+// Serve the frontend files
 app.use(express.static(path.join(__dirname)));
 
 // Start the server
@@ -62,54 +65,52 @@ app.listen(3000, () => {
 
 // Frontend logic for form handling
 if (typeof window !== "undefined") {
-    document.getElementById("benefits-form").addEventListener("submit", handleSubmit);
-
-    async function handleSubmit(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        const state = document.getElementById("state").value;
-        const rating = document.getElementById("disability-rating").value;
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("benefits-form");
+        const stateInput = document.getElementById("state");
+        const ratingInput = document.getElementById("disability-rating");
         const errorMessage = document.getElementById("error-message");
-        const outputDiv = document.getElementById("benefits");
+        const outputDiv = document.getElementById("output");
 
-        // Validate user input
-        if (state === "None" || rating === "None") {
-            errorMessage.textContent = "Please select valid options for both state and disability rating.";
-            return;
-        }
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        // Clear any previous error messages
-        errorMessage.textContent = "";
+            const state = stateInput.value;
+            const rating = ratingInput.value;
 
-        try {
-            // Fetch data from the backend API
-            const response = await fetch(`/api/getBenefits?state=${state}&rating=${rating}`);
-
-            if (!response.ok) {
-                throw new Error(`Server responded with status: ${response.status}`);
+            // Validate inputs
+            if (state === "None" && rating === "None") {
+                errorMessage.textContent = "No selections made, please select at least one option.";
+                return;
             }
 
-            const data = await response.json();
+            // Clear any previous errors
+            errorMessage.textContent = "";
 
-            // Display benefits or fallback message
-            if (data && data.benefits) {
-                outputDiv.textContent = data.benefits;
-            } else {
-                outputDiv.textContent = "No data available for the selected state and disability rating.";
+            try {
+                // Fetch data from the backend API
+                const response = await fetch(`/api/getBenefits?state=${state}&rating=${rating}`);
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display results or fallback message
+                outputDiv.textContent =
+                    data.benefits || "No data available for the selected state and disability rating.";
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                errorMessage.textContent = "An error occurred while fetching the data. Please try again.";
             }
+        });
 
-            // Hide form and show results
-            document.getElementById("form-section").classList.add("hidden");
-            document.getElementById("results-section").classList.remove("hidden");
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            errorMessage.textContent = "An error occurred while fetching the data. Please try again.";
-        }
-    }
-
-    function goBack() {
-        // Show form and hide results
-        document.getElementById("form-section").classList.remove("hidden");
-        document.getElementById("results-section").classList.add("hidden");
-    }
+        document.getElementById("go-back").addEventListener("click", () => {
+            // Reset form and hide results
+            form.reset();
+            outputDiv.textContent = "";
+            errorMessage.textContent = "";
+        });
+    });
 }
