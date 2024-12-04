@@ -24,20 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = stateSelect.value.trim();
         const rating = ratingSelect.value.trim();
 
-        // Validate inputs
+        // Validate state input
         if (state === "None") {
             stateError.textContent = "Please select a valid state.";
             return;
         }
 
-        if (rating === "None") {
-            ratingError.textContent = "Please select a valid disability rating.";
-            return;
-        }
-
         // File paths for the header (0.txt) and disability-specific benefits
         const headerFilePath = `/States/${state}/0/0.txt`;
-        const benefitsFilePath = `/States/${state}/${rating}/${rating}.txt`;
+        let benefitsFilePath = null;
+        if (rating !== "None") {
+            benefitsFilePath = `/States/${state}/${rating}/${rating}.txt`;
+        }
 
         try {
             // Fetch and display the general benefits from 0.txt
@@ -64,28 +62,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Fetch and display the disability-specific benefits
-            const benefitsResponse = await fetch(benefitsFilePath);
-            if (!benefitsResponse.ok) {
-                throw new Error('Benefits file not found');
-            }
-            const benefitsContent = await benefitsResponse.text();
+            // Fetch and display the disability-specific benefits if a rating is selected
+            if (benefitsFilePath) {
+                const benefitsResponse = await fetch(benefitsFilePath);
+                if (!benefitsResponse.ok) {
+                    throw new Error('Benefits file not found');
+                }
+                const benefitsContent = await benefitsResponse.text();
 
-            const benefitsLines = benefitsContent.split('\n').filter(line => line.trim() !== '');
-            if (benefitsLines.length > 0) {
-                // Add the disability rating header as bold
-                const ratingHeader = document.createElement('li');
-                ratingHeader.innerHTML = `<strong>${benefitsLines[0]}</strong>`;
-                benefitsList.appendChild(ratingHeader);
+                const benefitsLines = benefitsContent.split('\n').filter(line => line.trim() !== '');
+                if (benefitsLines.length > 0) {
+                    // Add the disability rating header as bold
+                    const ratingHeader = document.createElement('li');
+                    ratingHeader.innerHTML = `<strong>${benefitsLines[0]}</strong>`;
+                    benefitsList.appendChild(ratingHeader);
 
-                // Add the rest of the benefits content
-                benefitsLines.slice(1).forEach(line => {
-                    if (line.trim() !== '') {
-                        const li = document.createElement('li');
-                        li.textContent = line.trim();
-                        benefitsList.appendChild(li);
-                    }
-                });
+                    // Add the rest of the benefits content
+                    benefitsLines.slice(1).forEach(line => {
+                        if (line.trim() !== '') {
+                            const li = document.createElement('li');
+                            li.textContent = line.trim();
+                            benefitsList.appendChild(li);
+                        }
+                    });
+                }
             }
         } catch (error) {
             // Display an error message if file fetch fails
