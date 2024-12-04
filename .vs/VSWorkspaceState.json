@@ -1,12 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Database",
-    "\\States\\Colorado",
-    "\\States\\Colorado\\90",
     "\\v1-scraperTool",
     "\\Website"
   ],
-  "SelectedNode": "\\Database\\createtable.sql",
+  "SelectedNode": "\\Website\\main.html",
   "PreviewInSolutionExplorer": false
 }

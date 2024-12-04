@@ -5,11 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const ratingSelect = document.getElementById('disability-rating');
     const stateError = document.getElementById('state-error');
     const ratingError = document.getElementById('rating-error');
-    const outputDiv = document.getElementById('output');
-    const benefitsSection = document.getElementById('benefits-results');
     const benefitsList = document.getElementById('benefits-list'); // List display
 
     // Hide the benefits section initially
+    const benefitsSection = document.getElementById('benefits-results');
     benefitsSection.style.display = 'none';
 
     // Event listener for form submission
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear previous error messages and results
         stateError.textContent = '';
         ratingError.textContent = '';
-        outputDiv.textContent = '';
         benefitsList.innerHTML = ''; // Clear the list
 
         // Get user inputs
@@ -37,29 +35,58 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Construct the file path
-        const filePath = `../States/${state}/${rating}/${rating}.txt`;
+        // File paths for the header (0.txt) and disability-specific benefits
+        const headerFilePath = `/States/${state}/0/0.txt`;
+        const benefitsFilePath = `/States/${state}/${rating}/${rating}.txt`;
 
         try {
-            // Fetch the content of the file
-            const response = await fetch(filePath);
-            if (!response.ok) {
-                throw new Error('File not found');
+            // Fetch and display the general benefits from 0.txt
+            const headerResponse = await fetch(headerFilePath);
+            if (!headerResponse.ok) {
+                throw new Error('Header file not found');
             }
-            const fileContent = await response.text();
+            const headerContent = await headerResponse.text();
 
-            // Convert file content to a list
-            const lines = fileContent.split('\n');
-            lines.forEach(line => {
-                if (line.trim() !== '') { // Ignore empty lines
-                    const li = document.createElement('li');
-                    li.textContent = line.trim();
-                    benefitsList.appendChild(li);
-                }
-            });
+            // Add the header as the first list item and make it bold
+            const headerLines = headerContent.split('\n').filter(line => line.trim() !== '');
+            if (headerLines.length > 0) {
+                const headerItem = document.createElement('li');
+                headerItem.innerHTML = `<strong>${headerLines[0]}</strong>`;
+                benefitsList.appendChild(headerItem);
 
-            // Show the benefits section
-            benefitsSection.style.display = 'block';
+                // Add the rest of the header content
+                headerLines.slice(1).forEach(line => {
+                    if (line.trim() !== '') {
+                        const li = document.createElement('li');
+                        li.textContent = line.trim();
+                        benefitsList.appendChild(li);
+                    }
+                });
+            }
+
+            // Fetch and display the disability-specific benefits
+            const benefitsResponse = await fetch(benefitsFilePath);
+            if (!benefitsResponse.ok) {
+                throw new Error('Benefits file not found');
+            }
+            const benefitsContent = await benefitsResponse.text();
+
+            const benefitsLines = benefitsContent.split('\n').filter(line => line.trim() !== '');
+            if (benefitsLines.length > 0) {
+                // Add the disability rating header as bold
+                const ratingHeader = document.createElement('li');
+                ratingHeader.innerHTML = `<strong>${benefitsLines[0]}</strong>`;
+                benefitsList.appendChild(ratingHeader);
+
+                // Add the rest of the benefits content
+                benefitsLines.slice(1).forEach(line => {
+                    if (line.trim() !== '') {
+                        const li = document.createElement('li');
+                        li.textContent = line.trim();
+                        benefitsList.appendChild(li);
+                    }
+                });
+            }
         } catch (error) {
             // Display an error message if file fetch fails
             const li = document.createElement('li');
@@ -67,9 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
             li.style.color = "red";
             benefitsList.appendChild(li);
             console.error('Error:', error);
-
-            // Ensure the benefits section is visible even on error
-            benefitsSection.style.display = 'block';
         }
+
+        // Show the benefits section
+        benefitsSection.style.display = 'block';
     });
 });
