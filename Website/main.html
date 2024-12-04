@@ -10,13 +10,15 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background-color: #f4f8fb;
+            background: url('logo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            background-color: rgba(255, 255, 255, 0.8);
+            background-blend-mode: overlay;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
-
         .container {
             width: 50%;
             border: 2px solid #007bff;
@@ -25,20 +27,17 @@
             background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
         h2 {
             text-align: center;
             font-size: 2rem;
             color: #007bff;
             margin-bottom: 20px;
         }
-
         form {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
         select, button {
             width: 90%;
             max-width: 300px;
@@ -47,17 +46,14 @@
             border-radius: 5px;
             border: 1px solid #ccc;
         }
-
         select {
             background-color: #ffffff;
             transition: border-color 0.3s ease;
         }
-
         select:focus {
             border-color: #007bff;
             outline: none;
         }
-
         label {
             width: 90%;
             max-width: 300px;
@@ -65,7 +61,6 @@
             text-align: left;
             font-size: 1rem;
         }
-
         .error {
             color: red;
             font-size: 0.9rem;
@@ -74,15 +69,13 @@
             width: 90%;
             max-width: 300px;
         }
-
         .button-container {
             margin-top: 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             width: 90%;
             max-width: 300px;
         }
-
         button {
             padding: 10px;
             font-size: 1rem;
@@ -93,39 +86,16 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         button:active {
             transform: scale(0.95);
-        }
-
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .print-button {
-            background-color: #28a745;
-        }
-
-        .print-button:hover {
-            background-color: #1c7a2c;
-        }
-
-        #output {
-            margin-top: 20px;
-            font-size: 1rem;
-            color: #333;
-            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-
         <h2>VA Benefits Finder</h2>
         <form id="benefits-form">
             <label for="state">Choose your state:</label>
@@ -139,11 +109,8 @@
                 <option value="Colorado">Colorado</option>
                 <option value="Connecticut">Connecticut</option>
                 <option value="Texas">Texas</option>
-
             </select>
-
             <div id="state-error" class="error"></div>
-
             <label for="disability-rating">Select disability rating:</label>
             <select id="disability-rating">
                 <option value="None">Select a disability rating</option>
@@ -158,20 +125,11 @@
                 <option value="90">90%</option>
                 <option value="100">100%</option>
             </select>
-
             <div id="rating-error" class="error"></div>
-
             <div class="button-container">
                 <button type="submit" id="submit-button">Submit</button>
-                <button type="button" class="print-button" onclick="window.print()">Print</button>
             </div>
         </form>
-        <div id="output"></div>
-        <div id="benefits-results" style="display: none;">
-            <h3 style="text-align: center;">Benefits List</h3>
-            <ul id="benefits-list"></ul>
-        </div>
-
     </div>
 </body>
 </html>
